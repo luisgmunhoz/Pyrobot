@@ -20,14 +20,14 @@ echo = Pin(ECHO_PIN, Pin.IN)
 led = PWM(Pin(25))
 
 # motor_a ports
-ina1 = Pin(3, Pin.OUT)
-ina2 = Pin(7, Pin.OUT)
-pwm_a = PWM(Pin(1))
+ina1 = Pin(11, Pin.OUT)
+ina2 = Pin(12, Pin.OUT)
+pwm_a = PWM(Pin(10))
 
 # motor_b ports
-inb1 = Pin(2, Pin.OUT)
-inb2 = Pin(1, Pin.OUT)
-pwm_b = PWM(Pin(0))
+inb1 = Pin(15, Pin.OUT)
+inb2 = Pin(14, Pin.OUT)
+pwm_b = PWM(Pin(13))
 
 
 
