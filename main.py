@@ -21,13 +21,13 @@ led = Pin(25, Pin.OUT)
 
 # motor_a ports
 ina1 = Pin(11, Pin.OUT)
-ina2 = Pin(12, Pin.OUT)
-pwm_a = PWM(Pin(10))
+ina2 = Pin(10, Pin.OUT)
+pwm_a = PWM(Pin(12))
 
 # motor_b ports
 inb1 = Pin(15, Pin.OUT)
-inb2 = Pin(14, Pin.OUT)
-pwm_b = PWM(Pin(13))
+inb2 = Pin(13, Pin.OUT)
+pwm_b = PWM(Pin(14))
 
 pwm_a.freq(10000)
 pwm_b.freq(10000)
@@ -77,9 +77,7 @@ def move_forward(duty):
     
 # Backward
 def move_backward(duty):
-    sleep(1)
     left_motor_backward(duty)
-    sleep(1)
     right_motor_backward(duty)
     
 #Turn Right
@@ -89,7 +87,7 @@ def turn_right(duty):
     
 #Turn Left
 def turn_left(duty):
-    stop_left_motor()
+    left_motor_backward()
     right_motor_forward(duty)
    
 #Stop
@@ -113,4 +111,24 @@ def test_r(duty):
 # sleep(10)
 while True:
     
-    move_forward(M)
+    move_backward(M)
+    
+        
+    
+
+
+   
+#     print("right")
+#     right_motor_backward(25)
+#     left_motor_forward(50)
+#     utime.sleep(1)
+    
+#     print("left")
+#     left_motor_backward(25)
+#     right_motor_forward(50)
+    
+    # else:
+        # stop_left_motor()
+        # stop_right_motor()
+
+
