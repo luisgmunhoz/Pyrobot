@@ -47,9 +47,9 @@ def left_motor_backward(duty):
     pwm_b.duty_u16(duty_16)
 
 def stop_left_motor():
-    pwm_b.value(0)
+    pwm_b.duty_u16(0)
     inb2.value(0)
-    inb1.duty_u16(0)
+    inb1.value(0)
 
 def right_motor_forward(duty):
     ina1.value(0)
@@ -68,7 +68,7 @@ def right_motor_backward(duty):
 def stop_right_motor():
     inb1.value(0)
     inb2.value(0)
-    pwm_b.duty_u16(0)
+    pwm_a.duty_u16(0)
     
 # Forward
 def move_forward(duty):    
@@ -80,29 +80,21 @@ def move_backward(duty):
     left_motor_backward(duty)
     right_motor_backward(duty)
     
-#Turn Right
-def turn_right(duty):
-    stop_right_motor()
-    left_motor_forward(duty)
-    
 #Turn Left
 def turn_left(duty):
-    left_motor_backward()
+    right_motor_backward(duty)
+    left_motor_forward(duty)
+    
+#Turn Right
+def turn_right(duty):
+    left_motor_backward(duty)
     right_motor_forward(duty)
    
 #Stop
 def stop():
     stop_right_motor()
     stop_left_motor()
-    
-    
-def test_l(duty):
-    stop_left_motor()
-    right_motor_backward(duty)
 
-def test_r(duty):
-    stop_right_motor()
-    left_motor_backward(duty)
 
 
 # sonic.test(26,27)
@@ -110,10 +102,18 @@ def test_r(duty):
 #mq2r.test
 # sleep(10)
 while True:
-    
-    move_backward(M)
-    
-        
+
+ move_backward(M)
+ sleep(1)
+ move_forward(M)
+ sleep(1)
+ stop()
+ sleep(1)
+ turn_left(M)
+ sleep(1)
+ turn_right(M)
+ sleep(1)
+
     
 
 
@@ -130,5 +130,6 @@ while True:
     # else:
         # stop_left_motor()
         # stop_right_motor()
+
 
 
