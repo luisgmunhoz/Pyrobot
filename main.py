@@ -36,7 +36,7 @@ def left_motor_forward(duty):
     inb1.value(0)
     inb2.value(1)
     duty_16 = int((duty * 65536) / 100)
-    print("motor esquerdo", duty_16)
+    #print("motor esquerdo", duty_16)
     pwm_b.duty_u16(duty_16)
     
 def left_motor_backward(duty):
@@ -56,7 +56,7 @@ def right_motor_forward(duty):
     ina2.value(1)
     led.value(0)
     duty_16 = int((duty * 65536) / 100)
-    print("motor direito", duty_16)
+    #print("motor direito", duty_16)
     pwm_a.duty_u16(duty_16)
 
 def right_motor_backward(duty):
@@ -95,41 +95,90 @@ def stop():
     stop_right_motor()
     stop_left_motor()
 
+def test_left(duty):
+    left_motor_forward(duty)
+    sleep(1)
+    left_motor_backward(duty)
+    sleep(1)
+    
+def test_right(duty):
+    right_motor_forward(duty)
+    sleep(1)
+    right_motor_backward(duty)
+    sleep(1)
 
+def getDistance(ECHO_PIN,TRIGGER_PIN):
+    
+    
+    trigger = Pin(TRIGGER_PIN, Pin.OUT)
+    echo = Pin(ECHO_PIN, Pin.IN)
+    # Ensure trigger is low initially
+    trigger.low()
+    sleep_us(2)
 
-# sonic.test(26,27)
-#mq2r.calibrate(28,3.3) #calibra os sensores
-#mq2r.test
+    # Send a 10 microsecond pulse to the trigger pin
+    trigger.high()
+    sleep_us(10)
+    trigger.low()
+
+    # Measure the duration of the echo pulse (in microseconds)
+    pulse_duration = time_pulse_us(echo, Pin.high)
+
+    # Calculate the distance (in centimeters) using the speed of sound (343 m/s)
+    distance = pulse_duration * 0.0343 / 2
+    return distance
+
+stopDistance=50
+
 # sleep(10)
+def test(M):
+    print(0)
+    test_left(M)
+    stop()
+    sleep(1)
+    test_right(M)
+    stop()
+    sleep(1)
+    
+    move_forward(M)
+    sleep(1)
+    move_backward(M)
+    sleep(1)
+    turn_right(M)
+    sleep(1)
+    turn_left(M)
+    sleep(1)
+    stop()
+    
+if True:
+    test(M)
+stopDist=50    
 while True:
 
- move_backward(M)
- sleep(1)
- move_forward(M)
- sleep(1)
- stop()
- sleep(1)
- turn_left(M)
- sleep(1)
- turn_right(M)
- sleep(1)
-
+    distance_mid = getDistance(7,6)
     
+    if(distance_mid >= stopDist) :
+        move_forward()
 
+    while(distance_mid >= stopDist):
+        distance_mid = getDistance(7,6)
 
-   
-#     print("right")
-#     right_motor_backward(25)
-#     left_motor_forward(50)
-#     utime.sleep(1)
-    
-#     print("left")
-#     left_motor_backward(25)
-#     right_motor_forward(50)
-    
-    # else:
-        # stop_left_motor()
-        # stop_right_motor()
+    stop()
 
+    distance_left = getDistance(9,8)
+    distance_right = getDistance(5,4)
+
+    if (distance_left>=200 and distance_right>=200):
+        turn_left(M)
+        sleep(0.4)
+    elif (distance_left<=stopDist and distance_right<=stopDist):
+        turn_left(M)
+        sleep(0.8)
+    elif (distance_left>=distance_right):
+        turn_left(M)
+        sleep(0.4)
+    elif (distance_left<distance_right):
+        turn_right(M)
+        sleep(0.4)
 
 
