@@ -8,8 +8,10 @@ M=100
 
 
 # Define the GPIO pin numbers for the trigger and echo pins
-ECHO_PIN = 26
-TRIGGER_PIN = 27
+ECHO_PIN = 2
+ECHO1 = 3
+ECHO2 = 4
+TRIGGER_PIN =1 
 
 # Initialize trigger and echo pins
 trigger = Pin(TRIGGER_PIN, Pin.OUT)
@@ -105,17 +107,17 @@ def test_right(duty):
     right_motor_backward(duty)
     sleep(1)
 
-def getDistance(ECHO_PIN,TRIGGER_PIN):
+def getDistance(echo_pin,trigger_pin):
     
-    trigger = Pin(TRIGGER_PIN, Pin.OUT)
-    echo = Pin(ECHO_PIN, Pin.IN)
+    trigger = Pin(trigger_pin, Pin.OUT)
+    echo = Pin(echo_pin, Pin.IN)
     # Ensure trigger is low initially
     trigger.low()
-    sleep_us(2)
+    sleep_us(200)
 
     # Send a 10 microsecond pulse to the trigger pin
     trigger.high()
-    sleep_us(10)
+    sleep_us(100)
     trigger.low()
 
     # Measure the duration of the echo pulse (in microseconds)
@@ -145,33 +147,12 @@ def test(M):
     
 if True:
     test(M)
-stopDist=50    
-while False:
-
-    distance_mid = getDistance(7,6)
     
-    if(distance_mid >= stopDist) :
-        move_forward()
-
-    while(distance_mid >= stopDist):
-        distance_mid = getDistance(7,6)
-
-    stop()
-
-    distance_left = getDistance(9,8)
-    distance_right = getDistance(5,4)
-
-    if (distance_left>=200 and distance_right>=200):
-        turn_left(M)
-        sleep(0.4)
-    elif (distance_left<=stopDist and distance_right<=stopDist):
-        turn_left(M)
-        sleep(0.8)
-    elif (distance_left>=distance_right):
-        turn_left(M)
-        sleep(0.4)
-    elif (distance_left<distance_right):
-        turn_right(M)
-        sleep(0.4)
-
-
+stopDist=50    
+while True:
+    distance_mid = getDistance(2,1)
+    distance_left = getDistance(3,1)
+    distance_right = getDistance(4,1)
+    print(f"2     {distance_mid}")
+    print(f"3     {distance_left}")
+    print(f"4     {distance_right}")
