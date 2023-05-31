@@ -1,6 +1,10 @@
 from machine import Pin  # type: ignore
 from machine import time_pulse_us  # type: ignore
 from time import sleep  # type: ignore
+from hcsr04 import HCSR04
+
+# Importa a biblioteca utime para usar funções relacionadas ao tempo
+import utime  # type: ignore
 
 # Define the GPIO pin numbers for the trigger and echo pins
 TRIGGER_PIN = 1
@@ -127,21 +131,42 @@ def test():
     turn_right()
 
 
-stop_dist = 50
+stop_dist = 5
+# Define os pinos do Raspberry Pi Pico conectados ao módulo HC-SR04
+hcsr04_trigger_pin = TRIGGER_PIN
+hcsr04_echo_pinL = ECHO_LEFT
+hcsr04_echo_pinM = ECHO_MIDDLE
+hcsr04_echo_pinR = ECHO_RIGHT
+
+
+# Define o timeout para o módulo HC-SR04 em ms
+hcsr04_timeout_ms = 20
+
+hcsr04_sensorL = HCSR04(hcsr04_trigger_pin, hcsr04_echo_pinL, hcsr04_timeout_ms)
+hcsr04_sensorM = HCSR04(hcsr04_trigger_pin, hcsr04_echo_pinM, hcsr04_timeout_ms)
+hcsr04_sensorR = HCSR04(hcsr04_trigger_pin, hcsr04_echo_pinR, hcsr04_timeout_ms)
 while True:
-    distance_left, distance_mid, distance_right = get_distance(
-        ECHO_LEFT, ECHO_MIDDLE, ECHO_RIGHT, TRIGGER_PIN
-    )
+    distance_left = hcsr04_sensorL.get_distance_cm()
+    distance_mid = hcsr04_sensorM.get_distance_cm()
+    distance_right = hcsr04_sensorR.get_distance_cm()
+    utime.sleep(1)
+
     print(f"{distance_left:.2f} \t {distance_mid:.2f} \t {distance_right:.2f}")
 
-    if distance_mid >= stop_dist:
+    if distance_mid > stop_dist:
         move_forward()
+        sleep(0.2)
     else:
         stop()
+        sleep(0.2)
 
-    if distance_left >= 100 and distance_right >= 100 and distance_mid < stop_dist:
+    if (
+        distance_left >= stop_dist
+        and distance_right >= stop_dist
+        and distance_mid < stop_dist
+    ):
         turn_left()
-        sleep(1)
+        sleep(0.2)
     elif (
         distance_left >= stop_dist
         and distance_right < stop_dist
@@ -149,7 +174,7 @@ while True:
         and distance_mid < stop_dist
     ):
         turn_left()
-        sleep(1)
+        sleep(0.2)
     elif distance_left < distance_right and distance_mid < stop_dist:
         turn_right()
-        sleep(1)
+        sleep(0.2)
