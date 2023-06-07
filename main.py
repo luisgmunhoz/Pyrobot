@@ -2,6 +2,7 @@ from machine import Pin  # type: ignore
 from machine import time_pulse_us  # type: ignore
 from time import sleep  # type: ignore
 from hcsr04 import HCSR04
+from random import randint
 
 # Importa a biblioteca utime para usar funções relacionadas ao tempo
 import utime  # type: ignore
@@ -54,6 +55,7 @@ def stop_left_motor():
 
 # Forward
 def move_forward():
+    print("frente")
     right_motor_forward()
     left_motor_forward()
 
@@ -66,12 +68,14 @@ def move_backward():
 
 # Turn Left
 def turn_right():
+    print("direita")
     right_motor_backward()
     left_motor_forward()
 
 
 # Turn Right
 def turn_left():
+    print("esquerda")
     left_motor_backward()
     right_motor_forward()
 
@@ -131,7 +135,7 @@ def test():
     turn_right()
 
 
-stop_dist = 5
+stop_dist = 30
 # Define os pinos do Raspberry Pi Pico conectados ao módulo HC-SR04
 hcsr04_trigger_pin = TRIGGER_PIN
 hcsr04_echo_pinL = ECHO_LEFT
@@ -142,39 +146,29 @@ hcsr04_echo_pinR = ECHO_RIGHT
 # Define o timeout para o módulo HC-SR04 em ms
 hcsr04_timeout_ms = 20
 
-hcsr04_sensorL = HCSR04(hcsr04_trigger_pin, hcsr04_echo_pinL, hcsr04_timeout_ms)
+
 hcsr04_sensorM = HCSR04(hcsr04_trigger_pin, hcsr04_echo_pinM, hcsr04_timeout_ms)
-hcsr04_sensorR = HCSR04(hcsr04_trigger_pin, hcsr04_echo_pinR, hcsr04_timeout_ms)
-while True:
-    distance_left = hcsr04_sensorL.get_distance_cm()
-    distance_mid = hcsr04_sensorM.get_distance_cm()
-    distance_right = hcsr04_sensorR.get_distance_cm()
-    utime.sleep(1)
 
-    print(f"{distance_left:.2f} \t {distance_mid:.2f} \t {distance_right:.2f}")
+community = 0.5
+sleep(5)
+with open("logs.txt", "w") as log_file:
+    while True:
+        sleep(community)
+        distance = hcsr04_sensorM.get_distance_cm()
+        
+        
+        log_file.write(f"disfrância em cm: {distance}\n")
+        
+        if distance > stop_dist:
+            move_forward()
+        else:
+            stop()
+            sleep(0.2)
+            curva = randint(0,1)
+            if curva == 1:
+                turn_right()
+                sleep(0.25)
+            else:
+                turn_left()
+                sleep(0.25)
 
-    if distance_mid > stop_dist:
-        move_forward()
-        sleep(0.2)
-    else:
-        stop()
-        sleep(0.2)
-
-    if (
-        distance_left >= stop_dist
-        and distance_right >= stop_dist
-        and distance_mid < stop_dist
-    ):
-        turn_left()
-        sleep(0.2)
-    elif (
-        distance_left >= stop_dist
-        and distance_right < stop_dist
-        or distance_left >= distance_right
-        and distance_mid < stop_dist
-    ):
-        turn_left()
-        sleep(0.2)
-    elif distance_left < distance_right and distance_mid < stop_dist:
-        turn_right()
-        sleep(0.2)
